@@ -1,63 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RFID Gown Lookup</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      text-align: center;
-    }
-    #status {
-      margin-top: 20px;
-      font-size: 1.2em;
-    }
-    input#scannerInput {
-      position: absolute;
-      top: -100px; /* hide input offscreen */
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RFID Gown Lookup</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    text-align: center;
+  }
+  #status {
+    margin-top: 20px;
+    font-size: 1.2em;
+  }
+  #scannerInput {
+    position: static; /* visible and easy to tap */
+    width: 300px;
+    height: 30px;
+    font-size: 18px;
+    margin-top: 10px;
+  }
+  #startButton {
+    margin-top: 40px;
+    padding: 15px 30px;
+    font-size: 20px;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body>
 
-  <h1>Scan Gown RFID Tag</h1>
-  <input id="scannerInput" autocomplete="off" autofocus />
+<h1>Scan Gown RFID Tag</h1>
 
-  <div id="status">Loading tag data...</div>
+<input id="scannerInput" autocomplete="off" />
 
-  <script>
-    const tagArray = [
-      { id: "04CF9CE6780000", url: "https://sites.google.com/firstlookbridaltx.com/store/1/kora" },
-      { id: "04AE68E7780000", url: "https://sites.google.com/firstlookbridaltx.com/store/1/francine" },
-      { id: "046A69E7780000", url: "https://sites.google.com/firstlookbridaltx.com/store/1/tanya" }
-    ];
+<div>
+  <button id="startButton">Tap to Start Scanning</button>
+</div>
 
-    const status = document.getElementById("status");
-    const input = document.getElementById("scannerInput");
+<div id="status">Please tap the button to start scanning</div>
 
-    status.textContent = "Ready to scan";
-    input.focus();
+<script>
+let tagToUrl = {
+  "04CF9CE6780000": "https://sites.google.com/firstlookbridaltx.com/store/1/kora",
+  "04AE68E7780000": "https://sites.google.com/firstlookbridaltx.com/store/1/francine",
+  "046A69E7780000": "https://sites.google.com/firstlookbridaltx.com/store/1/tanya"
+};
 
-    input.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        const scannedTag = input.value.trim();
-        const match = tagArray.find(tag => tag.id === scannedTag);
+const status = document.getElementById("status");
+const input = document.getElementById("scannerInput");
+const startButton = document.getElementById("startButton");
 
-        if (match) {
-          status.textContent = `Redirecting for tag: ${scannedTag}`;
-          setTimeout(() => {
-            window.location.href = match.url;
-          }, 500);
-        } else {
-          status.textContent = `No URL found for tag: ${scannedTag}`;
-        }
+startButton.addEventListener("click", () => {
+  input.focus();
+  status.textContent = "Ready to scan";
+  startButton.style.display = "none"; // hide button after tapping
+});
 
-        input.value = "";
+// Listen for Enter key after scanning tag
+input.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    const scannedTag = input.value.trim();
+    if (scannedTag.length > 0) {
+      if (tagToUrl[scannedTag]) {
+        status.textContent = `Redirecting for tag: ${scannedTag}`;
+        setTimeout(() => {
+          window.location.href = tagToUrl[scannedTag];
+        }, 500);
+      } else {
+        status.textContent = `No URL found for tag: ${scannedTag}`;
       }
-    });
-  </script>
+      input.value = "";
+    }
+  }
+});
+</script>
 
 </body>
 </html>
