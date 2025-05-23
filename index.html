@@ -45,23 +45,24 @@ fetch('tags.json')
     console.error(err);
   });
 
-// Listen for input from scanner
-input.addEventListener("input", () => {
-  const scannedTag = input.value.trim();
+// Listen for Enter key after full scan before processing
+input.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    const scannedTag = input.value.trim();
 
-  if (scannedTag.length > 0) {
-    // Find matching tag object by id
-    const found = tagArray.find(item => item.id === scannedTag);
+    if (scannedTag.length > 0) {
+      const found = tagArray.find(item => item.id === scannedTag);
 
-    if (found) {
-      status.textContent = `Redirecting for tag: ${scannedTag}`;
-      setTimeout(() => {
-        window.location.href = found.url;
-      }, 500);
-    } else {
-      status.textContent = `No URL found for tag: ${scannedTag}`;
+      if (found) {
+        status.textContent = `Redirecting for tag: ${scannedTag}`;
+        setTimeout(() => {
+          window.location.href = found.url;
+        }, 500);
+      } else {
+        status.textContent = `No URL found for tag: ${scannedTag}`;
+      }
+      input.value = "";
     }
-    input.value = "";
   }
 });
 </script>
