@@ -28,15 +28,15 @@
 <div id="status">Loading tag data...</div>
 
 <script>
-let tagToUrl = {};
+let tagArray = [];
 const status = document.getElementById("status");
 const input = document.getElementById("scannerInput");
 
-// Load tags.json file
+// Load tags.json file (array of objects with id and url)
 fetch('tags.json')
   .then(response => response.json())
   .then(data => {
-    tagToUrl = data;
+    tagArray = data;
     status.textContent = "Ready to scan";
     input.focus();
   })
@@ -50,10 +50,13 @@ input.addEventListener("input", () => {
   const scannedTag = input.value.trim();
 
   if (scannedTag.length > 0) {
-    if (tagToUrl[scannedTag]) {
+    // Find matching tag object by id
+    const found = tagArray.find(item => item.id === scannedTag);
+
+    if (found) {
       status.textContent = `Redirecting for tag: ${scannedTag}`;
       setTimeout(() => {
-        window.location.href = tagToUrl[scannedTag];
+        window.location.href = found.url;
       }, 500);
     } else {
       status.textContent = `No URL found for tag: ${scannedTag}`;
