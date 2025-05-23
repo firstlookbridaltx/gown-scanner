@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RFID Gown Lookup</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    text-align: center;
+  }
+  #status {
+    margin-top: 20px;
+    font-size: 1.2em;
+  }
+  input#scannerInput {
+    position: absolute;
+    top: -100px; /* hide input offscreen */
+  }
+</style>
+</head>
+<body>
+
+<h1>Scan Gown RFID Tag</h1>
+<input id="scannerInput" autocomplete="off" autofocus />
+
+<div id="status">Loading tag data...</div>
+
+<script>
+let tagToUrl = {};
+const status = document.getElementById("status");
+const input = document.getElementById("scannerInput");
+
+// Load tags.json file
+fetch('tags.json')
+  .then(response => response.json())
+  .then(data => {
+    tagToUrl = data;
+    status.textContent = "Ready to scan";
+    input.focus();
+  })
+  .catch(err => {
+    status.textContent = "Failed to load tag data";
+    console.error(err);
+  });
+
+// Listen for input from scanner
+input.addEventListener("input", () => {
+  const scannedTag = input.value.trim();
+
+  if (scannedTag.length > 0) {
+    if (tagToUrl[scannedTag]) {
+      status.textContent = `Redirecting for tag: ${scannedTag}`;
+      setTimeout(() => {
+        window.location.href = tagToUrl[scannedTag];
+      }, 500);
+    } else {
+      status.textContent = `No URL found for tag: ${scannedTag}`;
+    }
+    input.value = "";
+  }
+});
+</script>
+
+</body>
+</html>
